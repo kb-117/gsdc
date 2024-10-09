@@ -1,0 +1,215 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Embedded Address type
+type Address {
+  woreda String
+  city   String
+  state  String
+}
+
+// Patient Model
+model Patient {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  mrn          String
+  name         String
+  phone        String?
+  gender       String
+  DOB          DateTime
+  isInsured    Boolean  @default(false)
+  registeredAt DateTime @default(now())
+  address      Address
+
+  // Relations
+  appointments         Appointment[]         @relation("PatientAppointments")
+  payments             Payment[]             @relation("PatientPayments")
+  laboratoryResults    LaboratoryResult[]    @relation("PatientLaboratoryResults")
+  prescriptions        Prescription[]        @relation("PatientPrescriptions")
+  vitalSigns           VitalSigns[]          @relation("PatientVitalSigns")
+  chiefComplaints      ChiefComplaint[]      @relation("PatientChiefComplaints")
+  physicalExaminations PhysicalExamination[] @relation("PatientPhysicalExaminations")
+  diagnoses            Diagnosis[]           @relation("PatientDiagnoses")
+  imagingResults       ImagingResult[]       @relation("PatientImagingResults")
+  medicalCertificates  MedicalCertificate[]  @relation("PatientMedicalCertificates")
+  referrals            Referral[]            @relation("PatientReferrals")
+}
+
+// Appointment Model
+model Appointment {
+  id              String            @id @default(auto()) @map("_id") @db.ObjectId
+  appointmentDate DateTime
+  reason          String?
+  notes           String?
+  createdAt       DateTime          @default(now())
+  status          AppointmentStatus @default(SCHEDULED)
+
+  // Relation with Patient
+  patient   Patient @relation("PatientAppointments", fields: [patientId], references: [id])
+  patientId String  @db.ObjectId
+}
+
+// Enum for Appointment Status
+enum AppointmentStatus {
+  SCHEDULED
+  COMPLETED
+  CANCELED
+}
+
+model Payment {
+  id     String        @id @default(auto()) @map("_id") @db.ObjectId
+  amount Float
+  method PaymentMethod
+  status PaymentStatus @default(PENDING)
+  date   DateTime      @default(now())
+  reason String?
+
+  // Relation to the Patient model
+  patient   Patient @relation("PatientPayments", fields: [patientId], references: [id])
+  patientId String  @db.ObjectId
+}
+
+// Enum for Payment Methods
+enum PaymentMethod {
+  CreditCard
+  DebitCard
+  Cash
+  Insurance
+  BankTransfer
+}
+
+// Enum for Payment Status
+enum PaymentStatus {
+  PAID
+  PENDING
+  CANCELED
+}
+
+model Prescription {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  medication     String
+  dosage         String
+  instructions   String
+  datePrescribed DateTime @default(now())
+  prescriberName String
+
+  // Relation to the Patient model
+  patient   Patient @relation("PatientPrescriptions", fields: [patientId], references: [id])
+  patientId String  @db.ObjectId
+}
+
+model ChiefComplaint {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  complaint    String
+  duration     Int
+  severity     Int
+  dateRecorded DateTime @default(now())
+
+  // Relation to the Patient model
+  patient   Patient @relation("PatientChiefComplaints", fields: [patientId], references: [id])
+  patientId String  @db.ObjectId
+}
+
+model Diagnosis {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  condition    String
+  notes        String?
+  dateRecorded DateTime @default(now())
+
+  // Relation to the Patient model
+  patient   Patient @relation("PatientDiagnoses", fields: [patientId], references: [id])
+  patientId String  @db.ObjectId
+}
+
+model ImagingResult {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  description  String?
+  imagePath    String
+  dateRecorded DateTime @default(now())
+
+  // Relation to the Patient model
+  patient   Patient @relation("PatientImagingResults", fields: [patientId], references: [id])
+  patientId String  @db.ObjectId
+}
+
+model LaboratoryResult {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  testName     String
+  result       String
+  notes        String?
+  dateRecorded DateTime @default(now())
+
+  // Relation to the Patient model
+  patient   Patient @relation("PatientLaboratoryResults", fields: [patientId], references: [id])
+  patientId String  @db.ObjectId
+}
+
+model MedicalCertificate {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  diagnosis      String
+  treatment      String?
+  recommendation String?
+  prescriberName String
+  rest           Int?
+  issueDate      DateTime @default(now())
+
+  // Relation to the Patient model
+  patient   Patient @relation("PatientMedicalCertificates", fields: [patientId], references: [id])
+  patientId String  @db.ObjectId
+}
+
+model PhysicalExamination {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  findings     String
+  dateRecorded DateTime @default(now())
+
+  // Relation to the Patient model
+  patient   Patient @relation("PatientPhysicalExaminations", fields: [patientId], references: [id])
+  patientId String  @db.ObjectId
+}
+
+model VitalSigns {
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  temperature      Float?
+  bloodPressure    String?
+  heartRate        Int?
+  respiratoryRate  Int?
+  oxygenSaturation Float?
+  notes            String?
+  recordedAt       DateTime @default(now())
+
+  // Relation to the Patient model
+  patient   Patient @relation("PatientVitalSigns", fields: [patientId], references: [id])
+  patientId String  @db.ObjectId
+}
+
+model Referral {
+  id                      String   @id @default(auto()) @map("_id") @db.ObjectId
+  referredTo              String
+  reason                  String
+  urgency                 Urgency  @default(Routine)
+  specialistContact       String
+  treatment               String
+  history                 String
+  patientConsent          Boolean
+  radiographs             Boolean  @default(false)
+  otherRecords            Boolean  @default(false)
+  postReferralMaintenance Boolean  @default(false)
+  dateReferred            DateTime @default(now())
+
+  // Relation to the Patient model
+  patient   Patient @relation("PatientReferrals", fields: [patientId], references: [id])
+  patientId String  @db.ObjectId
+}
+
+// Enum for Referral Urgency
+enum Urgency {
+  Routine
+  Urgent
+  Emergency
+}
