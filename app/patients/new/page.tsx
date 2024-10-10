@@ -1,8 +1,22 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+
+interface PatientForm {
+  mrn: string;
+  name: string;
+  phone?: string;
+  gender: "male" | "female"; // Use union types for gender
+  DOB: string; // Date in ISO format
+  isInsured: boolean;
+  woreda: string;
+  city: string;
+  state: string;
+}
 
 const NewPatientsPage = () => {
+  const { register } = useForm<PatientForm>();
   const router = useRouter();
 
   const [form, setForm] = useState({
