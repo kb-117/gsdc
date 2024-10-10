@@ -63,10 +63,10 @@ const NewPatientsPage = () => {
 
   return (
     <div>
-      <h1>Create New Patient</h1>
+      <h1 className="text-xl font-bold m-4">Create New Patient</h1>
       {error && <p style={{ color: "red" }}>{error}</p>}
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div>
           <label>MRN:</label>
           <input
@@ -75,12 +75,14 @@ const NewPatientsPage = () => {
             value={form.mrn}
             onChange={handleInputChange}
             required
+            className="border-b"
           />
         </div>
 
         <div>
           <label>Name:</label>
           <input
+            className="border-b"
             type="text"
             name="name"
             value={form.name}
@@ -92,6 +94,7 @@ const NewPatientsPage = () => {
         <div>
           <label>Phone:</label>
           <input
+            className="border-b"
             type="text"
             name="phone"
             value={form.phone}
@@ -102,6 +105,7 @@ const NewPatientsPage = () => {
         <div>
           <label>Gender:</label>
           <input
+            className="border-b"
             type="text"
             name="gender"
             value={form.gender}
@@ -113,6 +117,7 @@ const NewPatientsPage = () => {
         <div>
           <label>Date of Birth:</label>
           <input
+            className="border-b"
             type="date"
             name="DOB"
             value={form.DOB}
@@ -124,6 +129,7 @@ const NewPatientsPage = () => {
         <div>
           <label>Is Insured:</label>
           <input
+            className="border-b"
             type="checkbox"
             name="isInsured"
             checked={form.isInsured}
@@ -135,6 +141,7 @@ const NewPatientsPage = () => {
         <div>
           <label>Woreda:</label>
           <input
+            className="border-b"
             type="text"
             name="woreda"
             value={form.woreda}
@@ -146,6 +153,7 @@ const NewPatientsPage = () => {
         <div>
           <label>City:</label>
           <input
+            className="border-b"
             type="text"
             name="city"
             value={form.city}
@@ -157,6 +165,7 @@ const NewPatientsPage = () => {
         <div>
           <label>State:</label>
           <input
+            className="border-b"
             type="text"
             name="state"
             value={form.state}
@@ -165,7 +174,11 @@ const NewPatientsPage = () => {
           />
         </div>
 
-        <button type="submit" disabled={loading}>
+        <button
+          type="submit"
+          disabled={loading}
+          className="px-2 bg-green-600 w-fit m-auto"
+        >
           {loading ? "Creating..." : "Create Patient"}
         </button>
       </form>
