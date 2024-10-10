@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
+import { useForm, SubmitHandler } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
 
 interface PatientForm {
   mrn: string;
@@ -16,34 +16,17 @@ interface PatientForm {
 }
 
 const NewPatientsPage = () => {
-  const { register } = useForm<PatientForm>();
   const router = useRouter();
-
-  const [form, setForm] = useState({
-    mrn: "",
-    name: "",
-    phone: "",
-    gender: "",
-    DOB: "",
-    isInsured: false,
-    woreda: "",
-    city: "",
-    state: "",
-  });
-
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<PatientForm>();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
-    setForm({
-      ...form,
-      [name]: type === "checkbox" ? checked : value,
-    });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit: SubmitHandler<PatientForm> = async (data) => {
     setLoading(true);
 
     try {
@@ -53,12 +36,12 @@ const NewPatientsPage = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          ...form,
-          DOB: new Date(form.DOB).toISOString(), // Ensure correct date format
+          ...data,
+          DOB: new Date(data.DOB).toISOString(), // Ensure correct date format
           address: {
-            woreda: form.woreda,
-            city: form.city,
-            state: form.state,
+            woreda: data.woreda,
+            city: data.city,
+            state: data.state,
           },
         }),
       });
@@ -67,6 +50,7 @@ const NewPatientsPage = () => {
         throw new Error("Failed to create patient");
       }
 
+      reset(); // Reset the form after successful submission
       router.push("/patients");
     } catch (err) {
       setError((err as Error).message);
@@ -80,17 +64,15 @@ const NewPatientsPage = () => {
       <h1 className="text-xl font-bold m-4">Create New Patient</h1>
       {error && <p style={{ color: "red" }}>{error}</p>}
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
         <div>
           <label>MRN:</label>
           <input
             type="text"
-            name="mrn"
-            value={form.mrn}
-            onChange={handleInputChange}
-            required
+            {...register("mrn", { required: "MRN is required" })}
             className="border-b"
           />
+          {errors.mrn && <p style={{ color: "red" }}>{errors.mrn.message}</p>}
         </div>
 
         <div>
@@ -98,34 +80,29 @@ const NewPatientsPage = () => {
           <input
             className="border-b"
             type="text"
-            name="name"
-            value={form.name}
-            onChange={handleInputChange}
-            required
+            {...register("name", { required: "Name is required" })}
           />
+          {errors.name && <p style={{ color: "red" }}>{errors.name.message}</p>}
         </div>
 
         <div>
           <label>Phone:</label>
-          <input
-            className="border-b"
-            type="text"
-            name="phone"
-            value={form.phone}
-            onChange={handleInputChange}
-          />
+          <input className="border-b" type="text" {...register("phone")} />
         </div>
 
         <div>
           <label>Gender:</label>
-          <input
+          <select
             className="border-b"
-            type="text"
-            name="gender"
-            value={form.gender}
-            onChange={handleInputChange}
-            required
-          />
+            {...register("gender", { required: "Gender is required" })}
+          >
+            <option value="">Select</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </select>
+          {errors.gender && (
+            <p style={{ color: "red" }}>{errors.gender.message}</p>
+          )}
         </div>
 
         <div>
@@ -133,11 +110,9 @@ const NewPatientsPage = () => {
           <input
             className="border-b"
             type="date"
-            name="DOB"
-            value={form.DOB}
-            onChange={handleInputChange}
-            required
+            {...register("DOB", { required: "Date of Birth is required" })}
           />
+          {errors.DOB && <p style={{ color: "red" }}>{errors.DOB.message}</p>}
         </div>
 
         <div>
@@ -145,9 +120,7 @@ const NewPatientsPage = () => {
           <input
             className="border-b"
             type="checkbox"
-            name="isInsured"
-            checked={form.isInsured}
-            onChange={handleInputChange}
+            {...register("isInsured")}
           />
         </div>
 
@@ -157,11 +130,11 @@ const NewPatientsPage = () => {
           <input
             className="border-b"
             type="text"
-            name="woreda"
-            value={form.woreda}
-            onChange={handleInputChange}
-            required
+            {...register("woreda", { required: "Woreda is required" })}
           />
+          {errors.woreda && (
+            <p style={{ color: "red" }}>{errors.woreda.message}</p>
+          )}
         </div>
 
         <div>
@@ -169,11 +142,9 @@ const NewPatientsPage = () => {
           <input
             className="border-b"
             type="text"
-            name="city"
-            value={form.city}
-            onChange={handleInputChange}
-            required
+            {...register("city", { required: "City is required" })}
           />
+          {errors.city && <p style={{ color: "red" }}>{errors.city.message}</p>}
         </div>
 
         <div>
@@ -181,11 +152,11 @@ const NewPatientsPage = () => {
           <input
             className="border-b"
             type="text"
-            name="state"
-            value={form.state}
-            onChange={handleInputChange}
-            required
+            {...register("state", { required: "State is required" })}
           />
+          {errors.state && (
+            <p style={{ color: "red" }}>{errors.state.message}</p>
+          )}
         </div>
 
         <button
