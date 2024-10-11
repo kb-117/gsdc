@@ -1,34 +1,28 @@
 "use client";
-import { useState } from "react";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { patientSchema } from "@/app/validationSchemas";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { z } from "zod";
+import CallOutError from "@/app/components/CallOutError";
+import ErrorMessage from "@/app/components/ErrorMessage";
 
-interface PatientForm {
-  mrn: string;
-  name: string;
-  phone?: string;
-  gender: "male" | "female"; // Use union types for gender
-  DOB: string; // Date in ISO format
-  isInsured: boolean;
-  woreda: string;
-  city: string;
-  state: string;
-}
+type PatientForm = z.infer<typeof patientSchema>;
 
 const NewPatientsPage = () => {
   const router = useRouter();
+
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
+    setError,
     reset,
-  } = useForm<PatientForm>();
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  } = useForm<PatientForm>({
+    resolver: zodResolver(patientSchema),
+  });
 
   const onSubmit: SubmitHandler<PatientForm> = async (data) => {
-    setLoading(true);
-
     try {
       const response = await fetch("/api/patients", {
         method: "POST",
@@ -37,32 +31,44 @@ const NewPatientsPage = () => {
         },
         body: JSON.stringify({
           ...data,
-          DOB: new Date(data.DOB).toISOString(), // Ensure correct date format
-          address: {
-            woreda: data.woreda,
-            city: data.city,
-            state: data.state,
-          },
+          DOB: new Date(data.DOB).toISOString(),
         }),
       });
 
+      // Check if the server responded with an error
       if (!response.ok) {
-        throw new Error("Failed to create patient");
+        const responseData = await response.json();
+
+        // Set field-level or form-level errors based on the response
+        if (responseData.fieldErrors) {
+          for (const [field, message] of Object.entries(
+            responseData.fieldErrors
+          )) {
+            setError(field as keyof PatientForm, {
+              message: message as string,
+            });
+          }
+        } else {
+          setError("root", {
+            message: "Failed to create patient. Please try again.",
+          });
+        }
+        return;
       }
 
-      reset(); // Reset the form after successful submission
+      reset();
       router.push("/patients");
-    } catch (err) {
-      setError((err as Error).message);
-    } finally {
-      setLoading(false);
+    } catch (error) {
+      setError("root", {
+        message: "Something went wrong. Please try again.",
+      });
     }
   };
 
   return (
-    <div>
+    <div className="max-w-xl">
+      {<CallOutError>{errors.root?.message}</CallOutError>}
       <h1 className="text-xl font-bold m-4">Create New Patient</h1>
-      {error && <p style={{ color: "red" }}>{error}</p>}
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
         <div>
@@ -72,7 +78,7 @@ const NewPatientsPage = () => {
             {...register("mrn", { required: "MRN is required" })}
             className="border-b"
           />
-          {errors.mrn && <p style={{ color: "red" }}>{errors.mrn.message}</p>}
+          {<ErrorMessage>{errors.mrn?.message}</ErrorMessage>}
         </div>
 
         <div>
@@ -82,12 +88,13 @@ const NewPatientsPage = () => {
             type="text"
             {...register("name", { required: "Name is required" })}
           />
-          {errors.name && <p style={{ color: "red" }}>{errors.name.message}</p>}
+          {<ErrorMessage>{errors.name?.message}</ErrorMessage>}
         </div>
 
         <div>
           <label>Phone:</label>
           <input className="border-b" type="text" {...register("phone")} />
+          {<ErrorMessage>{errors.phone?.message}</ErrorMessage>}
         </div>
 
         <div>
@@ -100,9 +107,7 @@ const NewPatientsPage = () => {
             <option value="male">Male</option>
             <option value="female">Female</option>
           </select>
-          {errors.gender && (
-            <p style={{ color: "red" }}>{errors.gender.message}</p>
-          )}
+          {<ErrorMessage>{errors.gender?.message}</ErrorMessage>}
         </div>
 
         <div>
@@ -112,7 +117,7 @@ const NewPatientsPage = () => {
             type="date"
             {...register("DOB", { required: "Date of Birth is required" })}
           />
-          {errors.DOB && <p style={{ color: "red" }}>{errors.DOB.message}</p>}
+          {<ErrorMessage>{errors.DOB?.message}</ErrorMessage>}
         </div>
 
         <div>
@@ -130,11 +135,9 @@ const NewPatientsPage = () => {
           <input
             className="border-b"
             type="text"
-            {...register("woreda", { required: "Woreda is required" })}
+            {...register("address.woreda", { required: "Woreda is required" })}
           />
-          {errors.woreda && (
-            <p style={{ color: "red" }}>{errors.woreda.message}</p>
-          )}
+          {<ErrorMessage>{errors.address?.woreda?.message}</ErrorMessage>}
         </div>
 
         <div>
@@ -142,9 +145,9 @@ const NewPatientsPage = () => {
           <input
             className="border-b"
             type="text"
-            {...register("city", { required: "City is required" })}
+            {...register("address.city", { required: "City is required" })}
           />
-          {errors.city && <p style={{ color: "red" }}>{errors.city.message}</p>}
+          {<ErrorMessage>{errors.address?.city?.message}</ErrorMessage>}
         </div>
 
         <div>
@@ -152,19 +155,17 @@ const NewPatientsPage = () => {
           <input
             className="border-b"
             type="text"
-            {...register("state", { required: "State is required" })}
+            {...register("address.state", { required: "State is required" })}
           />
-          {errors.state && (
-            <p style={{ color: "red" }}>{errors.state.message}</p>
-          )}
+          {<ErrorMessage>{errors.address?.state?.message}</ErrorMessage>}
         </div>
 
         <button
           type="submit"
-          disabled={loading}
+          disabled={isSubmitting}
           className="px-2 bg-green-600 w-fit m-auto"
         >
-          {loading ? "Creating..." : "Create Patient"}
+          {isSubmitting ? "Creating..." : "Create Patient"}
         </button>
       </form>
     </div>
