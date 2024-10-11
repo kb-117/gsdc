@@ -6,6 +6,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import CallOutError from "@/app/components/CallOutError";
 import ErrorMessage from "@/app/components/ErrorMessage";
+import Spinner from "@/app/components/Spinner";
 
 type PatientForm = z.infer<typeof patientSchema>;
 
@@ -99,13 +100,11 @@ const NewPatientsPage = () => {
 
         <div>
           <label>Gender:</label>
-          <select
-            className="border-b"
-            {...register("gender", { required: "Gender is required" })}
-          >
+          <select className="border-b" {...register("gender")}>
             <option value="">Select</option>
             <option value="male">Male</option>
             <option value="female">Female</option>
+            <option value="other">Other</option>
           </select>
           {<ErrorMessage>{errors.gender?.message}</ErrorMessage>}
         </div>
@@ -165,7 +164,13 @@ const NewPatientsPage = () => {
           disabled={isSubmitting}
           className="px-2 bg-green-600 w-fit m-auto"
         >
-          {isSubmitting ? "Creating..." : "Create Patient"}
+          {isSubmitting ? (
+            <>
+              Creating patient <Spinner />
+            </>
+          ) : (
+            "Create Patient"
+          )}
         </button>
       </form>
     </div>
