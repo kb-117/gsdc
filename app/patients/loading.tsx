@@ -1,13 +1,12 @@
 import { Table } from "@radix-ui/themes";
-import Link from "next/link";
-import prisma from "@/prisma/client";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 import PatientsActions from "./PatientsActions";
-import { notFound } from "next/navigation";
-const PatientsPage = async () => {
-  const patients = await prisma.patient.findMany();
-  if (!patients) notFound();
+
+const loading = () => {
+  const patients = [1, 2, 3, 4, 5];
   return (
-    <div>
+    <>
       <PatientsActions />
       <Table.Root variant="surface">
         <Table.Header>
@@ -29,27 +28,29 @@ const PatientsPage = async () => {
         </Table.Header>
         <Table.Body>
           {patients.map((patient) => (
-            <Table.Row key={patient.id}>
+            <Table.Row key={patient}>
               <Table.Cell className="hidden md:table-cell">
-                <Link href={`/patients/${patient.id}`}>{patient.mrn}</Link>
+                <Skeleton />
               </Table.Cell>
-              <Table.Cell>{patient.name}</Table.Cell>
+              <Table.Cell>
+                <Skeleton />
+              </Table.Cell>
               <Table.Cell className="hidden md:table-cell">
-                {patient.gender}
+                <Skeleton />
               </Table.Cell>
               <Table.Cell className="hidden md:table-cell">
                 {" "}
-                {patient.DOB.toDateString()}
+                <Skeleton />
               </Table.Cell>
               <Table.Cell className="hidden md:table-cell">
-                {patient.phone}
+                <Skeleton />
               </Table.Cell>
             </Table.Row>
           ))}
         </Table.Body>
       </Table.Root>
-    </div>
+    </>
   );
 };
 
-export default PatientsPage;
+export default loading;
