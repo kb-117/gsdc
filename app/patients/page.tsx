@@ -1,5 +1,5 @@
 import { Table } from "@radix-ui/themes";
-import Link from "../components/Link";
+import { Link } from "../components/";
 import prisma from "@/prisma/client";
 import PatientsActions from "./PatientsActions";
 import { notFound } from "next/navigation";
