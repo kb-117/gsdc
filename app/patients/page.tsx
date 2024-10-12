@@ -1,5 +1,5 @@
 import { Table } from "@radix-ui/themes";
-import Link from "next/link";
+import Link from "../components/Link";
 import prisma from "@/prisma/client";
 import PatientsActions from "./PatientsActions";
 import { notFound } from "next/navigation";
@@ -33,7 +33,10 @@ const PatientsPage = async () => {
               <Table.Cell className="hidden md:table-cell">
                 <Link href={`/patients/${patient.id}`}>{patient.mrn}</Link>
               </Table.Cell>
-              <Table.Cell>{patient.name}</Table.Cell>
+              <Table.Cell>
+                {" "}
+                <Link href={`/patients/${patient.id}`}>{patient.name}</Link>
+              </Table.Cell>
               <Table.Cell className="hidden md:table-cell">
                 {patient.gender}
               </Table.Cell>
