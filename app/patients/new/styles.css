@@ -1,0 +1,48 @@
+/* Custom CSS for DatePicker styling */
+.custom-date-picker {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  border: 1px solid #c1c4c9;
+  background-color: #ffffff;
+  font-size: 14px;
+  width: 100%;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+}
+
+.custom-date-picker:hover {
+  border-color: #c1c7d0;
+}
+
+.custom-date-picker:focus-within {
+  border-color: rgba(224, 17, 96, 0.4);
+  box-shadow: 0 0 0 1.3px rgba(224, 17, 96, 0.501);
+  outline: none;
+}
+
+.custom-date-picker__input {
+  border: none;
+  width: 100%;
+  outline: none;
+  background-color: transparent;
+  font-family: inherit;
+}
+
+.react-date-picker__wrapper {
+  border: none;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.react-date-picker__inputGroup {
+  display: flex;
+  width: 100%;
+}
+
+.react-date-picker__clear-button,
+.react-date-picker__calendar-button {
+  display: none; /* Hide default buttons for a cleaner look */
+}

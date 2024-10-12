@@ -1,12 +1,21 @@
 "use client";
+import { z } from "zod";
 import { patientSchema } from "@/app/validationSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { z } from "zod";
-import CallOutError from "@/app/components/CallOutError";
-import ErrorMessage from "@/app/components/ErrorMessage";
-import Spinner from "@/app/components/Spinner";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import { CallOutError, ErrorMessage, Spinner } from "@/app/components";
+import {
+  Button,
+  Checkbox,
+  Flex,
+  Select,
+  Text,
+  TextField,
+} from "@radix-ui/themes";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import "./styles.css";
 
 type PatientForm = z.infer<typeof patientSchema>;
 
@@ -18,6 +27,7 @@ const NewPatientsPage = () => {
     handleSubmit,
     formState: { errors, isSubmitting },
     setError,
+    control,
     reset,
   } = useForm<PatientForm>({
     resolver: zodResolver(patientSchema),
@@ -72,98 +82,55 @@ const NewPatientsPage = () => {
       <h1 className="text-xl font-bold m-4">Create New Patient</h1>
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-        <div>
-          <label>MRN:</label>
-          <input
-            type="text"
-            {...register("mrn", { required: "MRN is required" })}
-            className="border-b"
-          />
-          {<ErrorMessage>{errors.mrn?.message}</ErrorMessage>}
-        </div>
+        <TextField.Root placeholder="MRN" {...register("mrn")} />
+        {<ErrorMessage>{errors.mrn?.message}</ErrorMessage>}
 
-        <div>
-          <label>Name:</label>
-          <input
-            className="border-b"
-            type="text"
-            {...register("name", { required: "Name is required" })}
-          />
-          {<ErrorMessage>{errors.name?.message}</ErrorMessage>}
-        </div>
+        <TextField.Root placeholder="Name" {...register("name")} />
+        {<ErrorMessage>{errors.name?.message}</ErrorMessage>}
 
-        <div>
-          <label>Phone:</label>
-          <input className="border-b" type="text" {...register("phone")} />
-          {<ErrorMessage>{errors.phone?.message}</ErrorMessage>}
-        </div>
+        <TextField.Root placeholder="Phone" {...register("phone")} />
+        {<ErrorMessage>{errors.phone?.message}</ErrorMessage>}
 
-        <div>
-          <label>Gender:</label>
-          <select className="border-b" {...register("gender")}>
-            <option value="">Select</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="other">Other</option>
-          </select>
-          {<ErrorMessage>{errors.gender?.message}</ErrorMessage>}
-        </div>
+        <Select.Root {...register("gender")}>
+          <Select.Trigger placeholder="Gender" />
+          <Select.Content>
+            <Select.Item value="male">Male</Select.Item>
+            <Select.Item value="female">Female</Select.Item>
+            <Select.Item value="other">Other</Select.Item>
+          </Select.Content>
+        </Select.Root>
+        {<ErrorMessage>{errors.gender?.message}</ErrorMessage>}
+        <Controller
+          name="DOB"
+          control={control}
+          render={({ field }) => (
+            <DatePicker
+              {...field}
+              className="custom-date-picker"
+              placeholderText="Date of Birth"
+            />
+          )}
+        />
 
-        <div>
-          <label>Date of Birth:</label>
-          <input
-            className="border-b"
-            type="date"
-            {...register("DOB", { required: "Date of Birth is required" })}
-          />
-          {<ErrorMessage>{errors.DOB?.message}</ErrorMessage>}
-        </div>
-
-        <div>
-          <label>Is Insured:</label>
-          <input
-            className="border-b"
-            type="checkbox"
-            {...register("isInsured")}
-          />
-        </div>
+        {<ErrorMessage>{errors.DOB?.message}</ErrorMessage>}
 
         {/* Address fields */}
-        <div>
-          <label>Woreda:</label>
-          <input
-            className="border-b"
-            type="text"
-            {...register("address.woreda", { required: "Woreda is required" })}
-          />
-          {<ErrorMessage>{errors.address?.woreda?.message}</ErrorMessage>}
-        </div>
+        <TextField.Root placeholder="Woreda" {...register("address.woreda")} />
+        {<ErrorMessage>{errors.address?.woreda?.message}</ErrorMessage>}
 
-        <div>
-          <label>City:</label>
-          <input
-            className="border-b"
-            type="text"
-            {...register("address.city", { required: "City is required" })}
-          />
-          {<ErrorMessage>{errors.address?.city?.message}</ErrorMessage>}
-        </div>
+        <TextField.Root placeholder="City" {...register("address.city")} />
+        {<ErrorMessage>{errors.address?.city?.message}</ErrorMessage>}
 
-        <div>
-          <label>State:</label>
-          <input
-            className="border-b"
-            type="text"
-            {...register("address.state", { required: "State is required" })}
-          />
-          {<ErrorMessage>{errors.address?.state?.message}</ErrorMessage>}
-        </div>
+        <TextField.Root placeholder="State" {...register("address.state")} />
+        {<ErrorMessage>{errors.address?.state?.message}</ErrorMessage>}
 
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="px-2 bg-green-600 w-fit m-auto"
-        >
+        <Text as="label" size="3">
+          <Flex gap="2">
+            <Checkbox {...register("isInsured")} /> Patient is Insured
+          </Flex>
+        </Text>
+
+        <Button disabled={isSubmitting} type="submit">
           {isSubmitting ? (
             <>
               Creating patient <Spinner />
@@ -171,7 +138,7 @@ const NewPatientsPage = () => {
           ) : (
             "Create Patient"
           )}
-        </button>
+        </Button>
       </form>
     </div>
   );
