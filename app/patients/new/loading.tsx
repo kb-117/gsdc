@@ -1,7 +1,22 @@
-import React from "react";
+import { Flex } from "@radix-ui/themes";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 const LoadingNewPage = () => {
-  return <div>loading...</div>;
+  return (
+    <div>
+      <div className="max-w-xl">
+        <Skeleton height="2rem" className="mt-5" />
+        <form>
+          <Skeleton count={5} height="1.3rem" />
+          <Flex>
+            <Skeleton count={3} height="1.3rem" />
+          </Flex>
+        </form>
+      </div>
+      ;
+    </div>
+  );
 };
 
 export default LoadingNewPage;
