@@ -1,10 +1,7 @@
 "use client";
-import { z } from "zod";
+import { CallOutError, ErrorMessage, Spinner } from "@/app/components";
 import { patientSchema } from "@/app/validationSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
-import { Controller, SubmitHandler, useForm } from "react-hook-form";
-import { CallOutError, ErrorMessage, Spinner } from "@/app/components";
 import {
   Button,
   Checkbox,
@@ -13,8 +10,9 @@ import {
   Text,
   TextField,
 } from "@radix-ui/themes";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+import { useRouter } from "next/navigation";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import { z } from "zod";
 import "./styles.css";
 
 type PatientForm = z.infer<typeof patientSchema>;
@@ -27,8 +25,8 @@ const NewPatientsPage = () => {
     handleSubmit,
     formState: { errors, isSubmitting },
     setError,
-    control,
     reset,
+    control,
   } = useForm<PatientForm>({
     resolver: zodResolver(patientSchema),
   });
@@ -91,26 +89,24 @@ const NewPatientsPage = () => {
         <TextField.Root placeholder="Phone" {...register("phone")} />
         {<ErrorMessage>{errors.phone?.message}</ErrorMessage>}
 
-        <Select.Root {...register("gender")}>
-          <Select.Trigger placeholder="Gender" />
-          <Select.Content>
-            <Select.Item value="male">Male</Select.Item>
-            <Select.Item value="female">Female</Select.Item>
-            <Select.Item value="other">Other</Select.Item>
-          </Select.Content>
-        </Select.Root>
-        {<ErrorMessage>{errors.gender?.message}</ErrorMessage>}
         <Controller
-          name="DOB"
+          name="gender"
           control={control}
           render={({ field }) => (
-            <DatePicker
-              {...field}
-              className="custom-date-picker"
-              placeholderText="Date of Birth"
-            />
+            <Select.Root value={field.value} onValueChange={field.onChange}>
+              <Select.Trigger placeholder="Gender" />
+              <Select.Content>
+                <Select.Item value="male">Male</Select.Item>
+                <Select.Item value="female">Female</Select.Item>
+                <Select.Item value="other">Other</Select.Item>
+              </Select.Content>
+            </Select.Root>
           )}
         />
+
+        {<ErrorMessage>{errors.gender?.message}</ErrorMessage>}
+
+        <input type="date" {...register("DOB")} className="custom-date-input" />
 
         {<ErrorMessage>{errors.DOB?.message}</ErrorMessage>}
 
