@@ -20,7 +20,6 @@ const DatePicker = <T extends FieldValues>({
       control={control}
       render={({ field: { onChange, value } }) => (
         <AntdDatePicker
-          className="radix-style-input"
           placeholder={label ? label : name}
           value={value ? dayjs(value) : null}
           onChange={(date, dateString) => {
