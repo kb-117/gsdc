@@ -1,19 +1,15 @@
 "use client";
-import { CallOutError, ErrorMessage, Spinner } from "@/app/components";
+import CallOutError from "@/app/components/CallOutError";
+import DatePicker from "@/app/components/DatePicker";
+import ErrorMessage from "@/app/components/ErrorMessage";
+import Spinner from "@/app/components/Spinner";
 import { patientSchema } from "@/app/validationSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Button,
-  Checkbox,
-  Flex,
-  Select,
-  Text,
-  TextField,
-} from "@radix-ui/themes";
+import { TextField } from "@radix-ui/themes";
+import { Input } from "antd";
 import { useRouter } from "next/navigation";
-import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
-import "./styles.css";
 
 type PatientForm = z.infer<typeof patientSchema>;
 
@@ -38,10 +34,7 @@ const NewPatientsPage = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          ...data,
-          DOB: new Date(data.DOB).toISOString(),
-        }),
+        body: JSON.stringify(data),
       });
 
       // Check if the server responded with an error
@@ -80,53 +73,71 @@ const NewPatientsPage = () => {
       <h1 className="text-xl font-bold m-4">Create New Patient</h1>
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-        <TextField.Root placeholder="MRN" {...register("mrn")} />
-        {<ErrorMessage>{errors.mrn?.message}</ErrorMessage>}
+        <div>
+          <Input placeholder="MRN" {...register("mrn")} variant="outlined" />
+          {<ErrorMessage>{errors.mrn?.message}</ErrorMessage>}
+        </div>
 
         <TextField.Root placeholder="Name" {...register("name")} />
+
         {<ErrorMessage>{errors.name?.message}</ErrorMessage>}
 
-        <TextField.Root placeholder="Phone" {...register("phone")} />
-        {<ErrorMessage>{errors.phone?.message}</ErrorMessage>}
+        <div>
+          <label>Phone:</label>
+          <input className="border-b" type="text" {...register("phone")} />
+          {<ErrorMessage>{errors.phone?.message}</ErrorMessage>}
+        </div>
 
-        <Controller
-          name="gender"
-          control={control}
-          render={({ field }) => (
-            <Select.Root value={field.value} onValueChange={field.onChange}>
-              <Select.Trigger placeholder="Gender" />
-              <Select.Content>
-                <Select.Item value="male">Male</Select.Item>
-                <Select.Item value="female">Female</Select.Item>
-                <Select.Item value="other">Other</Select.Item>
-              </Select.Content>
-            </Select.Root>
-          )}
-        />
+        <div>
+          <label>Gender:</label>
+          <select className="border-b" {...register("gender")}>
+            <option value="">Select</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
+          </select>
+          {<ErrorMessage>{errors.gender?.message}</ErrorMessage>}
+        </div>
 
-        {<ErrorMessage>{errors.gender?.message}</ErrorMessage>}
-
-        <input type="date" {...register("DOB")} className="custom-date-input" />
-
+        <DatePicker name="DOB" control={control} label="Date Of Birth" />
         {<ErrorMessage>{errors.DOB?.message}</ErrorMessage>}
 
         {/* Address fields */}
-        <TextField.Root placeholder="Woreda" {...register("address.woreda")} />
-        {<ErrorMessage>{errors.address?.woreda?.message}</ErrorMessage>}
+        <div>
+          <label>Woreda:</label>
+          <input
+            className="border-b"
+            type="text"
+            {...register("address.woreda", { required: "Woreda is required" })}
+          />
+          {<ErrorMessage>{errors.address?.woreda?.message}</ErrorMessage>}
+        </div>
 
-        <TextField.Root placeholder="City" {...register("address.city")} />
-        {<ErrorMessage>{errors.address?.city?.message}</ErrorMessage>}
+        <div>
+          <label>City:</label>
+          <input
+            className="border-b"
+            type="text"
+            {...register("address.city", { required: "City is required" })}
+          />
+          {<ErrorMessage>{errors.address?.city?.message}</ErrorMessage>}
+        </div>
 
-        <TextField.Root placeholder="State" {...register("address.state")} />
-        {<ErrorMessage>{errors.address?.state?.message}</ErrorMessage>}
+        <div>
+          <label>State:</label>
+          <input
+            className="border-b"
+            type="text"
+            {...register("address.state", { required: "State is required" })}
+          />
+          {<ErrorMessage>{errors.address?.state?.message}</ErrorMessage>}
+        </div>
 
-        <Text as="label" size="3">
-          <Flex gap="2">
-            <Checkbox {...register("isInsured")} /> Patient is Insured
-          </Flex>
-        </Text>
-
-        <Button disabled={isSubmitting} type="submit">
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="px-2 bg-green-600 w-fit m-auto"
+        >
           {isSubmitting ? (
             <>
               Creating patient <Spinner />
@@ -134,7 +145,7 @@ const NewPatientsPage = () => {
           ) : (
             "Create Patient"
           )}
-        </Button>
+        </button>
       </form>
     </div>
   );
