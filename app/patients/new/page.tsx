@@ -1,9 +1,12 @@
 "use client";
-import CallOutError from "@/app/components/CallOutError";
-import DatePicker from "@/app/components/DatePicker";
-import ErrorMessage from "@/app/components/ErrorMessage";
-import Spinner from "@/app/components/Spinner";
-import Input from "@/app/components/Input";
+
+import {
+  Input,
+  CallOutError,
+  ErrorMessage,
+  Spinner,
+  DatePicker,
+} from "@/app/components";
 import { patientSchema } from "@/app/validationSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@radix-ui/themes";
@@ -15,7 +18,6 @@ import { FaMapLocationDot } from "react-icons/fa6";
 import { MdOutlineLocalPhone } from "react-icons/md";
 import { TbNumber } from "react-icons/tb";
 import { z } from "zod";
-import AddressFields from "./AddressFields";
 
 type PatientForm = z.infer<typeof patientSchema>;
 
