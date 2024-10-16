@@ -4,5 +4,3 @@ export { default as Spinner } from "./Spinner";
 export { default as CallOutError } from "./CallOutError";
 export { default as StatusBadge } from "./StatusBadge";
 export { default as Skeleton } from "./Skeleton";
-export { default as Input } from "./Input";
-export { default as DatePicker } from "./DatePicker";
