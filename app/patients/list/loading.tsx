@@ -1,6 +1,6 @@
 import { Table } from "@radix-ui/themes";
 import { Skeleton } from "@/app/components";
-import PatientsActions from "./_components/PatientsActions";
+import PatientsActions from "../_components/PatientsActions";
 
 const loading = () => {
   const patients = [1, 2, 3, 4, 5];

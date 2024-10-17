@@ -37,7 +37,7 @@ const DeletePatientButton = ({ patientId }: { patientId: string }) => {
                 try {
                   setDeleting(true);
                   await axios.delete("/api/patients/" + patientId);
-                  router.push("/patients");
+                  router.push("/patients/list");
                   router.refresh();
                 } catch (error) {
                   setError(true);

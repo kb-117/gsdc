@@ -1,7 +1,7 @@
 import { Table } from "@radix-ui/themes";
-import { Link } from "../components/";
+import { Link } from "../../components";
 import prisma from "@/prisma/client";
-import PatientsActions from "./_components/PatientsActions";
+import PatientsActions from "../_components/PatientsActions";
 import { notFound } from "next/navigation";
 const PatientsPage = async () => {
   const patients = await prisma.patient.findMany();
