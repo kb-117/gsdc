@@ -6,7 +6,7 @@ const EditPatientButton = ({ patientId }: { patientId: string }) => {
   return (
     <Button>
       <Link href={`/patients/${patientId}/edit`}>
-        <HiOutlinePencilSquare /> Edit Issue
+        <HiOutlinePencilSquare className="inline" /> Edit Patient
       </Link>
     </Button>
   );

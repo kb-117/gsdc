@@ -33,9 +33,9 @@ export default function RootLayout({
       >
         <Theme accentColor="blue">
           <NavBar />
-          <Container>
-            <main className="p-5">{children}</main>
-          </Container>
+          <main className="p-5">
+            <Container>{children}</Container>
+          </main>
         </Theme>
       </body>
     </html>

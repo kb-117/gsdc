@@ -30,3 +30,22 @@ export async function PATCH(
 
   return NextResponse.json(updatedPatient);
 }
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const patient = await prisma.patient.findUnique({
+    where: { id: params.id },
+  });
+  if (!patient)
+    return NextResponse.json({ error: "Invalid id" }, { status: 404 });
+
+  await prisma.patient.delete({
+    where: {
+      id: patient.id,
+    },
+  });
+
+  return NextResponse.json({});
+}

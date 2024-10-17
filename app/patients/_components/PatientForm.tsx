@@ -58,6 +58,7 @@ const PatientForm = ({ patient }: { patient?: Patient }) => {
 
       reset();
       router.push("/patients");
+      router.refresh();
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.data?.fieldErrors) {
         for (const [field, message] of Object.entries(
