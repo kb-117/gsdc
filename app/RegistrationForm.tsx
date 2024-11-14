@@ -10,6 +10,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 
 const userRegistrationSchema = z.object({
+  name: z.string().min(3, "Name is required and must be above 3 characters"),
   email: z.string().email("Invalid email address"),
   password: z.string().min(5, "Password must be at least 5 characters long"),
 });
@@ -56,6 +57,12 @@ const UserRegistration = () => {
       <h1 className="text-xl font-bold m-4">Register New User</h1>
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+        <Input
+          name="name"
+          label="Full Name"
+          setValue={setValue}
+          control={control}
+        />
         <Input
           name="email"
           label="Email"
